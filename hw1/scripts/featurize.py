@@ -141,34 +141,56 @@ def freq_and_feature(text, freq):
 def example_feature(text, freq):
     return int('example' in text)
 
+def freq_call_feature(text, freq):
+    return float(freq['call'])
+def freq_free_feature(text, freq):
+    return float(freq['free'])
+def freq_text_feature(text, freq):
+    return float(freq['text'])
+def freq_offer_feature(text, freq):
+    return float(freq['offer'])
+def freq_win_feature(text, freq):
+    return float(freq['win'])
+def freq_http_feature(text, freq):
+    return len(re.findall(r'http[s]?://', text))
+
+def ratio_spam_words(text, freq):
+    spam_words = ['free', 'call', 'win', 'cash', 'offer', '!', 'text']
+    count = sum(freq[word] for word in spam_words if word in freq)
+    return count / len(text.split()) if len(text.split()) > 0 else 0
+
+def ratio_special_characters(text, freq):
+    special_chars = sum(text.count(c) for c in "!$%&")
+    return special_chars / len(text) if len(text) > 0 else 0
+
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
-    feature.append(freq_pain_feature(text, freq))
+    # feature.append(freq_pain_feature(text, freq))
     feature.append(freq_private_feature(text, freq))
     feature.append(freq_bank_feature(text, freq))
     feature.append(freq_money_feature(text, freq))
     feature.append(freq_drug_feature(text, freq))
     feature.append(freq_spam_feature(text, freq))
     feature.append(freq_prescription_feature(text, freq))
-    feature.append(freq_creative_feature(text, freq))
-    feature.append(freq_height_feature(text, freq))
+    # feature.append(freq_creative_feature(text, freq))
+    # feature.append(freq_height_feature(text, freq))
     feature.append(freq_featured_feature(text, freq))
-    feature.append(freq_differ_feature(text, freq))
-    feature.append(freq_width_feature(text, freq))
-    feature.append(freq_other_feature(text, freq))
-    feature.append(freq_energy_feature(text, freq))
+    # feature.append(freq_differ_feature(text, freq))
+    # feature.append(freq_width_feature(text, freq))
+    # feature.append(freq_other_feature(text, freq))
+    # feature.append(freq_energy_feature(text, freq))
     feature.append(freq_business_feature(text, freq))
-    feature.append(freq_message_feature(text, freq))
-    feature.append(freq_volumes_feature(text, freq))
-    feature.append(freq_revision_feature(text, freq))
-    feature.append(freq_path_feature(text, freq))
-    feature.append(freq_meter_feature(text, freq))
-    feature.append(freq_memo_feature(text, freq))
+    # feature.append(freq_message_feature(text, freq))
+    # feature.append(freq_volumes_feature(text, freq))
+    # feature.append(freq_revision_feature(text, freq))
+    # feature.append(freq_path_feature(text, freq))
+    # feature.append(freq_meter_feature(text, freq))
+    # feature.append(freq_memo_feature(text, freq))
     feature.append(freq_planning_feature(text, freq))
-    feature.append(freq_pleased_feature(text, freq))
-    feature.append(freq_record_feature(text, freq))
-    feature.append(freq_out_feature(text, freq))
+    # feature.append(freq_pleased_feature(text, freq))
+    # feature.append(freq_record_feature(text, freq))
+    # feature.append(freq_out_feature(text, freq))
     feature.append(freq_semicolon_feature(text, freq))
     feature.append(freq_dollar_feature(text, freq))
     feature.append(freq_sharp_feature(text, freq))
@@ -179,7 +201,14 @@ def generate_feature_vector(text, freq):
 
     # --------- Add your own features here ---------
     # Make sure type is int or float
-
+    feature.append(freq_call_feature(text, freq))
+    feature.append(freq_free_feature(text, freq))
+    feature.append(freq_text_feature(text, freq))
+    feature.append(freq_offer_feature(text, freq))
+    feature.append(freq_win_feature(text, freq))
+    feature.append(freq_http_feature(text, freq))
+    feature.append(ratio_spam_words(text, freq))
+    feature.append(ratio_special_characters(text, freq))
     return feature
 
 # This method generates a design matrix with a list of filenames
@@ -219,4 +248,4 @@ test_design_matrix = generate_design_matrix(test_filenames)
 X = spam_design_matrix + ham_design_matrix
 Y = np.array([1]*len(spam_design_matrix) + [0]*len(ham_design_matrix)).reshape((-1, 1)).squeeze()
 
-np.savez(BASE_DIR + 'spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)
+np.savez(BASE_DIR + 'test-spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)
