@@ -97,8 +97,8 @@ def freq_revision_feature(text, freq):
 def freq_path_feature(text, freq):
     return float(freq['path'])
 
-def freq_meter_feature(text, freq):
-    return float(freq['meter'])
+def freq_meters_feature(text, freq):
+    return float(freq['meters'])
 
 def freq_memo_feature(text, freq):
     return float(freq['memo'])
@@ -142,55 +142,119 @@ def example_feature(text, freq):
     return int('example' in text)
 
 def freq_call_feature(text, freq):
-    return float(freq['call'])
+    return int(freq['call'])
 def freq_free_feature(text, freq):
-    return float(freq['free'])
+    return int(freq['free'])
 def freq_text_feature(text, freq):
-    return float(freq['text'])
+    return int(freq['text'])
 def freq_offer_feature(text, freq):
-    return float(freq['offer'])
+    return int(freq['offer'])
 def freq_win_feature(text, freq):
-    return float(freq['win'])
+    return int(freq['win'])
+
+
+# def ratio_spam_words(text, freq):
+#     spam_words = ['free', 'call', 'win', 'cash', 'offer', '!', 'text']
+#     count = sum(freq[word] for word in spam_words if word in freq)
+#     return int(count / len(text.split()) if len(text.split()) > 0 else 0)
+
+# def ratio_special_characters(text, freq):
+#     special_chars = sum(text.count(c) for c in "!$%&")
+#     return int(special_chars / len(text) if len(text) > 0 else 0)
+
+def email_length_feature(text, freq):
+    return len(text)
+
+# def capitalized_words_count_feature(text, freq):
+#     words = text.split()
+#     return sum(1 for word in words if word.isupper())
 def freq_http_feature(text, freq):
-    return len(re.findall(r'http[s]?://', text))
+    return int(freq['http'])
+def freq_www_feature(text, freq):
+    return int(freq['www'])
+def freq_com_feature(text, freq):
+    return int(freq['com'])
+def freq_href_feature(text, freq):
+    return int(freq['href'])
+def freq_src_feature(text, freq):
+    return int(freq['scr'])
+def freq_img_feature(text, freq):
+    return int(freq['img'])
+def freq_font_feature(text, freq):
+    return int(freq['font'])
+def freq_div_feature(text, freq):
+    return int(freq['div'])
+def freq_viagra_feature(text, freq):
+    return int(freq['viagra'])
+def freq_cash_feature(text, freq):
+    return int(freq['cash'])
+def freq_urgent_feature(text, freq):
+    return int(freq['urgent'])
+def freq_deal_feature(text, freq):
+    return int(freq['deal'])
+def freq_click_feature(text, freq):
+    return int(freq['click'])
+def freq_pills_feature(text, freq):
+    return int(freq['pills'])
+def freq_00_feature(text, freq):
+    return int(freq['00'])
+def freq_td_feature(text, freq):
+    return int(freq['td'])
+def freq_nbsp_feature(text, freq):
+    return int(freq['nbsp'])
+def freq_company_feature(text, freq):
+    return int(freq['company'])
+def freq_statements_feature(text, freq):
+    return int(freq['statements'])
+def freq_subject_feature(text, freq):
+    return int(freq['subject'])
+def freq_enron_feature(text, freq):
+    return int(freq['enron'])
+def freq_hou_feature(text, freq):
+    return int(freq['hou'])
+def freq_ect_feature(text, freq):
+    return int(freq['ect'])
+def freq_please_feature(text, freq):
+    return int(freq['please'])
+def freq_cc_feature(text, freq):
+    return int(freq['cc'])
+def freq_am_feature(text, freq):
+    return int(freq['am'])
+def freq_pm_feature(text, freq):
+    return int(freq['pm'])
+def freq_thanks_feature(text, freq):
+    return int(freq['thanks'])
+# Count occurrences of suspicious SPAM keywords
 
-def ratio_spam_words(text, freq):
-    spam_words = ['free', 'call', 'win', 'cash', 'offer', '!', 'text']
-    count = sum(freq[word] for word in spam_words if word in freq)
-    return count / len(text.split()) if len(text.split()) > 0 else 0
-
-def ratio_special_characters(text, freq):
-    special_chars = sum(text.count(c) for c in "!$%&")
-    return special_chars / len(text) if len(text) > 0 else 0
 
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
-    # feature.append(freq_pain_feature(text, freq))
+    feature.append(freq_pain_feature(text, freq))
     feature.append(freq_private_feature(text, freq))
     feature.append(freq_bank_feature(text, freq))
     feature.append(freq_money_feature(text, freq))
     feature.append(freq_drug_feature(text, freq))
     feature.append(freq_spam_feature(text, freq))
     feature.append(freq_prescription_feature(text, freq))
-    # feature.append(freq_creative_feature(text, freq))
-    # feature.append(freq_height_feature(text, freq))
+    feature.append(freq_creative_feature(text, freq))
+    feature.append(freq_height_feature(text, freq))
     feature.append(freq_featured_feature(text, freq))
-    # feature.append(freq_differ_feature(text, freq))
-    # feature.append(freq_width_feature(text, freq))
-    # feature.append(freq_other_feature(text, freq))
-    # feature.append(freq_energy_feature(text, freq))
+    feature.append(freq_differ_feature(text, freq))
+    feature.append(freq_width_feature(text, freq))
+    feature.append(freq_other_feature(text, freq))
+    feature.append(freq_energy_feature(text, freq))
     feature.append(freq_business_feature(text, freq))
-    # feature.append(freq_message_feature(text, freq))
-    # feature.append(freq_volumes_feature(text, freq))
-    # feature.append(freq_revision_feature(text, freq))
-    # feature.append(freq_path_feature(text, freq))
-    # feature.append(freq_meter_feature(text, freq))
+    feature.append(freq_message_feature(text, freq))
+    feature.append(freq_volumes_feature(text, freq))
+    feature.append(freq_revision_feature(text, freq))
+    feature.append(freq_path_feature(text, freq))
+    feature.append(freq_meters_feature(text, freq))
     # feature.append(freq_memo_feature(text, freq))
     feature.append(freq_planning_feature(text, freq))
-    # feature.append(freq_pleased_feature(text, freq))
-    # feature.append(freq_record_feature(text, freq))
-    # feature.append(freq_out_feature(text, freq))
+    feature.append(freq_pleased_feature(text, freq))
+    feature.append(freq_record_feature(text, freq))
+    feature.append(freq_out_feature(text, freq))
     feature.append(freq_semicolon_feature(text, freq))
     feature.append(freq_dollar_feature(text, freq))
     feature.append(freq_sharp_feature(text, freq))
@@ -201,14 +265,50 @@ def generate_feature_vector(text, freq):
 
     # --------- Add your own features here ---------
     # Make sure type is int or float
-    feature.append(freq_call_feature(text, freq))
-    feature.append(freq_free_feature(text, freq))
-    feature.append(freq_text_feature(text, freq))
-    feature.append(freq_offer_feature(text, freq))
-    feature.append(freq_win_feature(text, freq))
+    # feature.append(freq_call_feature(text, freq))
+    # feature.append(freq_free_feature(text, freq))
+    # feature.append(freq_text_feature(text, freq))
+    # feature.append(freq_offer_feature(text, freq))
+    # feature.append(freq_win_feature(text, freq))
     feature.append(freq_http_feature(text, freq))
-    feature.append(ratio_spam_words(text, freq))
-    feature.append(ratio_special_characters(text, freq))
+    feature.append(freq_www_feature(text, freq))
+    feature.append(freq_com_feature(text, freq))
+    feature.append(freq_href_feature(text, freq))
+    feature.append(freq_src_feature(text, freq))
+    feature.append(freq_img_feature(text, freq))
+    feature.append(freq_font_feature(text, freq))
+    feature.append(freq_div_feature(text, freq))   
+    # feature.append(freq_http_feature(text, freq))
+    # feature.append(ratio_spam_words(text, freq))
+    # feature.append(ratio_special_characters(text, freq))
+
+    # feature.append(email_length_feature(text, freq))
+    # feature.append(capitalized_words_count_feature(text, freq))
+    # feature.append(count_links_feature(text, freq))  # Counts "http", "www", "com"
+    # feature.append(count_html_tags_feature(text, freq))  # Counts HTML tags like "href", "src", "img"
+    # feature.append(count_spam_keywords_feature(text, freq))  # Counts suspicious SPAM-specific keywords
+    
+    feature.append(freq_viagra_feature(text, freq))
+
+    feature.append(freq_cash_feature(text, freq))
+    # feature.append(freq_urgent_feature(text, freq))
+    # feature.append(freq_deal_feature(text, freq))
+    feature.append(freq_click_feature(text, freq))
+    feature.append(freq_pills_feature(text, freq))
+    feature.append(freq_td_feature(text, freq))
+    feature.append(freq_nbsp_feature(text, freq))
+    feature.append(freq_company_feature(text, freq))
+    feature.append(freq_statements_feature(text, freq))
+    feature.append(freq_subject_feature(text, freq))
+    feature.append(freq_enron_feature(text, freq))
+    feature.append(freq_hou_feature(text, freq))
+    feature.append(freq_ect_feature(text, freq))
+    feature.append(freq_please_feature(text, freq))
+    feature.append(freq_cc_feature(text, freq))      
+    feature.append(freq_am_feature(text, freq)) 
+    feature.append(freq_pm_feature(text, freq)) 
+    feature.append(freq_thanks_feature(text, freq))
+    # feature.append(freq_00_feature(text, freq))
     return feature
 
 # This method generates a design matrix with a list of filenames
