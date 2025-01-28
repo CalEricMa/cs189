@@ -224,6 +224,8 @@ def freq_pm_feature(text, freq):
     return int(freq['pm'])
 def freq_thanks_feature(text, freq):
     return int(freq['thanks'])
+def freq_forwarded_feature(text, freq):
+    return int(freq['forwarded'])
 # Count occurrences of suspicious SPAM keywords
 
 
@@ -308,6 +310,7 @@ def generate_feature_vector(text, freq):
     feature.append(freq_am_feature(text, freq)) 
     feature.append(freq_pm_feature(text, freq)) 
     feature.append(freq_thanks_feature(text, freq))
+    feature.append(freq_forwarded_feature(text, freq))
     # feature.append(freq_00_feature(text, freq))
     return feature
 
