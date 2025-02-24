@@ -152,22 +152,9 @@ def freq_offer_feature(text, freq):
 def freq_win_feature(text, freq):
     return int(freq['win'])
 
-
-# def ratio_spam_words(text, freq):
-#     spam_words = ['free', 'call', 'win', 'cash', 'offer', '!', 'text']
-#     count = sum(freq[word] for word in spam_words if word in freq)
-#     return int(count / len(text.split()) if len(text.split()) > 0 else 0)
-
-# def ratio_special_characters(text, freq):
-#     special_chars = sum(text.count(c) for c in "!$%&")
-#     return int(special_chars / len(text) if len(text) > 0 else 0)
-
 def email_length_feature(text, freq):
     return len(text)
 
-# def capitalized_words_count_feature(text, freq):
-#     words = text.split()
-#     return sum(1 for word in words if word.isupper())
 def freq_http_feature(text, freq):
     return int(freq['http'])
 def freq_www_feature(text, freq):
@@ -302,9 +289,9 @@ def generate_feature_vector(text, freq):
     feature.append(freq_company_feature(text, freq))
     feature.append(freq_statements_feature(text, freq))
     feature.append(freq_subject_feature(text, freq))
-    feature.append(freq_enron_feature(text, freq))
-    feature.append(freq_hou_feature(text, freq))
-    feature.append(freq_ect_feature(text, freq))
+    # feature.append(freq_enron_feature(text, freq))
+    # feature.append(freq_hou_feature(text, freq))
+    # feature.append(freq_ect_feature(text, freq))
     feature.append(freq_please_feature(text, freq))
     feature.append(freq_cc_feature(text, freq))      
     feature.append(freq_am_feature(text, freq)) 
@@ -351,4 +338,4 @@ test_design_matrix = generate_design_matrix(test_filenames)
 X = spam_design_matrix + ham_design_matrix
 Y = np.array([1]*len(spam_design_matrix) + [0]*len(ham_design_matrix)).reshape((-1, 1)).squeeze()
 
-np.savez(BASE_DIR + 'test-spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)
+np.savez(BASE_DIR + 'q7-spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)

@@ -1,0 +1,5 @@
+I got 2 SPAM npz file, 1 is the original one (spam-data.npz) and 
+the other one (q7-spam-data.npz) can be produced by running cell 9 in hw1.ipynb or just run featurize.py
+featurize.py is modified
+
+all the things needed should be already in hw1.ipynb
