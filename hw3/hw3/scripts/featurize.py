@@ -140,6 +140,82 @@ def freq_and_feature(text, freq):
 # --------- Add your own feature methods ----------
 def example_feature(text, freq):
     return int('example' in text)
+def example_feature(text, freq):
+    return int('example' in text)
+
+def freq_call_feature(text, freq):
+    return int(freq['call'])
+def freq_free_feature(text, freq):
+    return int(freq['free'])
+def freq_text_feature(text, freq):
+    return int(freq['text'])
+def freq_offer_feature(text, freq):
+    return int(freq['offer'])
+def freq_win_feature(text, freq):
+    return int(freq['win'])
+
+def email_length_feature(text, freq):
+    return len(text)
+
+def freq_http_feature(text, freq):
+    return int(freq['http'])
+def freq_www_feature(text, freq):
+    return int(freq['www'])
+def freq_com_feature(text, freq):
+    return int(freq['com'])
+def freq_href_feature(text, freq):
+    return int(freq['href'])
+def freq_src_feature(text, freq):
+    return int(freq['scr'])
+def freq_img_feature(text, freq):
+    return int(freq['img'])
+def freq_font_feature(text, freq):
+    return int(freq['font'])
+def freq_div_feature(text, freq):
+    return int(freq['div'])
+def freq_viagra_feature(text, freq):
+    return int(freq['viagra'])
+def freq_cash_feature(text, freq):
+    return int(freq['cash'])
+def freq_urgent_feature(text, freq):
+    return int(freq['urgent'])
+def freq_deal_feature(text, freq):
+    return int(freq['deal'])
+def freq_click_feature(text, freq):
+    return int(freq['click'])
+def freq_pills_feature(text, freq):
+    return int(freq['pills'])
+def freq_00_feature(text, freq):
+    return int(freq['00'])
+def freq_td_feature(text, freq):
+    return int(freq['td'])
+def freq_nbsp_feature(text, freq):
+    return int(freq['nbsp'])
+def freq_company_feature(text, freq):
+    return int(freq['company'])
+def freq_statements_feature(text, freq):
+    return int(freq['statements'])
+def freq_subject_feature(text, freq):
+    return int(freq['subject'])
+def freq_enron_feature(text, freq):
+    return int(freq['enron'])
+def freq_hou_feature(text, freq):
+    return int(freq['hou'])
+def freq_ect_feature(text, freq):
+    return int(freq['ect'])
+def freq_please_feature(text, freq):
+    return int(freq['please'])
+def freq_cc_feature(text, freq):
+    return int(freq['cc'])
+def freq_am_feature(text, freq):
+    return int(freq['am'])
+def freq_pm_feature(text, freq):
+    return int(freq['pm'])
+def freq_thanks_feature(text, freq):
+    return int(freq['thanks'])
+def freq_forwarded_feature(text, freq):
+    return int(freq['forwarded'])
+
 
 # Generates a feature vector
 def generate_feature_vector(text, freq):
@@ -179,7 +255,46 @@ def generate_feature_vector(text, freq):
 
     # --------- Add your own features here ---------
     # Make sure type is int or float
+    feature.append(freq_http_feature(text, freq))
+    feature.append(freq_www_feature(text, freq))
+    feature.append(freq_com_feature(text, freq))
+    feature.append(freq_href_feature(text, freq))
+    feature.append(freq_src_feature(text, freq))
+    feature.append(freq_img_feature(text, freq))
+    feature.append(freq_font_feature(text, freq))
+    feature.append(freq_div_feature(text, freq))   
+    # feature.append(freq_http_feature(text, freq))
+    # feature.append(ratio_spam_words(text, freq))
+    # feature.append(ratio_special_characters(text, freq))
 
+    # feature.append(email_length_feature(text, freq))
+    # feature.append(capitalized_words_count_feature(text, freq))
+    # feature.append(count_links_feature(text, freq))  # Counts "http", "www", "com"
+    # feature.append(count_html_tags_feature(text, freq))  # Counts HTML tags like "href", "src", "img"
+    # feature.append(count_spam_keywords_feature(text, freq))  # Counts suspicious SPAM-specific keywords
+    
+    feature.append(freq_viagra_feature(text, freq))
+
+    feature.append(freq_cash_feature(text, freq))
+    # feature.append(freq_urgent_feature(text, freq))
+    # feature.append(freq_deal_feature(text, freq))
+    feature.append(freq_click_feature(text, freq))
+    feature.append(freq_pills_feature(text, freq))
+    feature.append(freq_td_feature(text, freq))
+    feature.append(freq_nbsp_feature(text, freq))
+    feature.append(freq_company_feature(text, freq))
+    feature.append(freq_statements_feature(text, freq))
+    feature.append(freq_subject_feature(text, freq))
+    feature.append(freq_enron_feature(text, freq))
+    feature.append(freq_hou_feature(text, freq))
+    feature.append(freq_ect_feature(text, freq))
+    feature.append(freq_please_feature(text, freq))
+    feature.append(freq_cc_feature(text, freq))      
+    feature.append(freq_am_feature(text, freq)) 
+    feature.append(freq_pm_feature(text, freq)) 
+    feature.append(freq_thanks_feature(text, freq))
+    feature.append(freq_forwarded_feature(text, freq))
+    # feature.append(freq_00_feature(text, freq))
     return feature
 
 # This method generates a design matrix with a list of filenames
@@ -219,4 +334,4 @@ test_design_matrix = generate_design_matrix(test_filenames)
 X = spam_design_matrix + ham_design_matrix
 Y = np.array([1]*len(spam_design_matrix) + [0]*len(ham_design_matrix)).reshape((-1, 1)).squeeze()
 
-np.savez(BASE_DIR + 'spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)
+np.savez(BASE_DIR + 'new-spam-data.npz', training_data=X, training_labels=Y, test_data=test_design_matrix)
