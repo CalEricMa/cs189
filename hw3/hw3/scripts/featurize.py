@@ -215,16 +215,37 @@ def freq_thanks_feature(text, freq):
     return int(freq['thanks'])
 def freq_forwarded_feature(text, freq):
     return int(freq['forwarded'])
+def freq_td_feature(text, freq):
+    return int(freq['td'])
+
+def freq_size_feature(text, freq):
+    return int(freq['size'])
+def freq_investment_feature(text, freq):
+    return int(freq['investment'])
+def freq_allign_feature(text, freq):
+    return int(freq['allign'])
+def freq_pills_feature(text, freq):
+    return int(freq['pills'])
+def freq_tr_feature(text, freq):
+    return int(freq['tr'])
+def freq_stock_feature(text, freq):
+    return int(freq['stock'])
+def freq_securities_feature(text, freq):
+    return int(freq['securities'])
+def freq_computron_feature(text, freq):
+    return int(freq['computron'])
+def freq_u_feature(text, freq):
+    return int(freq['u'])
 
 
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
-    feature.append(freq_pain_feature(text, freq))
-    feature.append(freq_private_feature(text, freq))
-    feature.append(freq_bank_feature(text, freq))
-    feature.append(freq_money_feature(text, freq))
-    feature.append(freq_drug_feature(text, freq))
+    # feature.append(freq_pain_feature(text, freq))
+    # feature.append(freq_private_feature(text, freq))
+    # feature.append(freq_bank_feature(text, freq))
+    # feature.append(freq_money_feature(text, freq))
+    # feature.append(freq_drug_feature(text, freq))
     feature.append(freq_spam_feature(text, freq))
     feature.append(freq_prescription_feature(text, freq))
     feature.append(freq_creative_feature(text, freq))
@@ -238,7 +259,7 @@ def generate_feature_vector(text, freq):
     feature.append(freq_message_feature(text, freq))
     feature.append(freq_volumes_feature(text, freq))
     feature.append(freq_revision_feature(text, freq))
-    feature.append(freq_path_feature(text, freq))
+    # feature.append(freq_path_feature(text, freq))
     feature.append(freq_meter_feature(text, freq))
     feature.append(freq_memo_feature(text, freq))
     feature.append(freq_planning_feature(text, freq))
@@ -283,7 +304,7 @@ def generate_feature_vector(text, freq):
     feature.append(freq_td_feature(text, freq))
     feature.append(freq_nbsp_feature(text, freq))
     feature.append(freq_company_feature(text, freq))
-    feature.append(freq_statements_feature(text, freq))
+    # feature.append(freq_statements_feature(text, freq))
     feature.append(freq_subject_feature(text, freq))
     feature.append(freq_enron_feature(text, freq))
     feature.append(freq_hou_feature(text, freq))
@@ -294,7 +315,18 @@ def generate_feature_vector(text, freq):
     feature.append(freq_pm_feature(text, freq)) 
     feature.append(freq_thanks_feature(text, freq))
     feature.append(freq_forwarded_feature(text, freq))
-    # feature.append(freq_00_feature(text, freq))
+    feature.append(freq_td_feature(text, freq))
+    feature.append(freq_free_feature(text, freq))
+
+    feature.append(freq_size_feature(text, freq))
+    feature.append(freq_investment_feature(text, freq))
+    feature.append(freq_allign_feature(text, freq))
+    feature.append(freq_pills_feature(text, freq))
+    feature.append(freq_tr_feature(text, freq))
+    feature.append(freq_stock_feature(text, freq))
+    feature.append(freq_securities_feature(text, freq))
+    feature.append(freq_computron_feature(text, freq))
+    feature.append(freq_u_feature(text, freq))
     return feature
 
 # This method generates a design matrix with a list of filenames

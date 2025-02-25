@@ -1,0 +1,178 @@
+
+Top 50 Most Differentiating Words Between SPAM and HAM:
+ect: SPAM=2, HAM=11363, Difference=11361
+the: SPAM=5794, HAM=14769, Difference=8975
+to: SPAM=4114, HAM=12127, Difference=8013
+hou: SPAM=8, HAM=5936, Difference=5928
+enron: SPAM=0, HAM=5265, Difference=5265
+for: SPAM=2003, HAM=6366, Difference=4363
+on: SPAM=996, HAM=4789, Difference=3793
+subject: SPAM=1335, HAM=5120, Difference=3785
+i: SPAM=863, HAM=4201, Difference=3338
+and: SPAM=3893, HAM=6295, Difference=2402
+will: SPAM=555, HAM=2768, Difference=2213
+deal: SPAM=24, HAM=2171, Difference=2147
+is: SPAM=1805, HAM=3912, Difference=2107
+gas: SPAM=121, HAM=2223, Difference=2102
+you: SPAM=2227, HAM=4315, Difference=2088
+this: SPAM=1861, HAM=3868, Difference=2007
+meter: SPAM=0, HAM=1975, Difference=1975
+be: SPAM=1049, HAM=2998, Difference=1949
+have: SPAM=714, HAM=2588, Difference=1874
+cc: SPAM=11, HAM=1884, Difference=1873
+hpl: SPAM=0, HAM=1826, Difference=1826
+pm: SPAM=15, HAM=1817, Difference=1802
+please: SPAM=390, HAM=2190, Difference=1800
+am: SPAM=99, HAM=1898, Difference=1799
+at: SPAM=601, HAM=2380, Difference=1779
+a: SPAM=3096, HAM=4820, Difference=1724
+from: SPAM=814, HAM=2500, Difference=1686
+if: SPAM=449, HAM=2089, Difference=1640
+we: SPAM=928, HAM=2564, Difference=1636
+that: SPAM=1075, HAM=2678, Difference=1603
+daren: SPAM=0, HAM=1501, Difference=1501
+thanks: SPAM=75, HAM=1459, Difference=1384
+by: SPAM=533, HAM=1908, Difference=1375
+corp: SPAM=44, HAM=1374, Difference=1330
+me: SPAM=427, HAM=1655, Difference=1228
+re: SPAM=197, HAM=1382, Difference=1185
+in: SPAM=2519, HAM=3689, Difference=1170
+mmbtu: SPAM=0, HAM=1082, Difference=1082
+forwarded: SPAM=1, HAM=1039, Difference=1038
+know: SPAM=118, HAM=1148, Difference=1030
+of: SPAM=3585, HAM=4609, Difference=1024
+j: SPAM=28, HAM=1019, Difference=991
+it: SPAM=850, HAM=1768, Difference=918
+d: SPAM=431, HAM=1339, Difference=908
+farmer: SPAM=4, HAM=908, Difference=904
+attached: SPAM=11, HAM=894, Difference=883
+with: SPAM=1179, HAM=2058, Difference=879
+xls: SPAM=0, HAM=844, Difference=844
+need: SPAM=177, HAM=1010, Difference=833
+com: SPAM=840, HAM=1672, Difference=832
+
+Top 50 Words in SPAM Emails:
+the: 5794
+to: 4114
+and: 3893
+of: 3585
+a: 3096
+in: 2519
+you: 2227
+for: 2003
+this: 1861
+is: 1805
+your: 1539
+subject: 1335
+with: 1179
+s: 1102
+or: 1091
+that: 1075
+be: 1049
+on: 996
+as: 977
+are: 949
+we: 928
+not: 864
+i: 863
+it: 850
+our: 846
+http: 840
+com: 840
+from: 814
+have: 714
+all: 693
+no: 617
+company: 610
+at: 601
+will: 555
+e: 548
+by: 533
+font: 512
+td: 502
+an: 488
+www: 487
+can: 484
+more: 483
+here: 469
+any: 451
+if: 449
+information: 438
+d: 431
+me: 427
+statements: 421
+nbsp: 405
+
+Top 50 Words in HAM Emails:
+the: 14769
+to: 12127
+ect: 11363
+for: 6366
+and: 6295
+hou: 5936
+enron: 5265
+subject: 5120
+a: 4820
+on: 4789
+of: 4609
+you: 4315
+i: 4201
+is: 3912
+this: 3868
+in: 3689
+be: 2998
+will: 2768
+that: 2678
+have: 2588
+we: 2564
+from: 2500
+at: 2380
+gas: 2223
+please: 2190
+deal: 2171
+if: 2089
+with: 2058
+meter: 1975
+by: 1908
+am: 1898
+cc: 1884
+hpl: 1826
+pm: 1817
+it: 1768
+are: 1747
+s: 1695
+com: 1672
+your: 1667
+me: 1655
+as: 1539
+not: 1526
+daren: 1501
+or: 1466
+thanks: 1459
+re: 1382
+corp: 1374
+d: 1339
+any: 1163
+know: 1148
+
+Top 20 Words Where SPAM Outnumbers HAM:
+http: SPAM=840, HAM=206, Difference=634
+font: SPAM=512, HAM=2, Difference=510
+td: SPAM=502, HAM=0, Difference=502
+nbsp: SPAM=405, HAM=0, Difference=405
+statements: SPAM=421, HAM=18, Difference=403
+height: SPAM=362, HAM=0, Difference=362
+www: SPAM=487, HAM=139, Difference=348
+width: SPAM=306, HAM=0, Difference=306
+size: SPAM=290, HAM=14, Difference=276
+company: SPAM=610, HAM=361, Difference=249
+investment: SPAM=245, HAM=8, Difference=237
+align: SPAM=232, HAM=6, Difference=226
+pills: SPAM=225, HAM=0, Difference=225
+tr: SPAM=225, HAM=4, Difference=221
+stock: SPAM=259, HAM=42, Difference=217
+securities: SPAM=230, HAM=16, Difference=214
+computron: SPAM=211, HAM=0, Difference=211
+more: SPAM=483, HAM=273, Difference=210
+color: SPAM=196, HAM=3, Difference=193
+u: SPAM=242, HAM=52, Difference=190
