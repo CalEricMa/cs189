@@ -34,31 +34,12 @@ class DecisionTree:
     @staticmethod
     def entropy(y):
         # TODO
-        if len(y) == 0:
-            return 0
-        _, counts = np.unique(y, return_counts=True)
-        p = counts/counts.sum()
-
-        return -np.sum(p * np.log2(p + eps)) #add eps to avoid log(0)
+        pass
 
     @staticmethod
     def information_gain(X, y, thresh):
         # TODO
-        cur_entropy = DecisionTree.entropy(y)
-        left = X < thresh
-        right = ~left
-        y_left = y[left]
-        y_right = y[right]
-
-        if len(y_left) == 0 or len(y_right) == 0:
-            return 0
-        
-        left_entropy = DecisionTree.entropy(y_left)
-        right_entropy = DecisionTree.entropy(y_right)
-
-        weighted_entropy = (len(y_left) / len(y)) * left_entropy + (len(y_right) / len(y)) * right_entropy
-
-        return cur_entropy - weighted_entropy
+        pass
 
     @staticmethod
     def gini_impurity(X, y, thresh):
@@ -78,74 +59,19 @@ class DecisionTree:
         is less than thresh, and (X_1, y_1) are the other examples.
         """
         # TODO
-        left = X[:, feature_idx] < thresh
-        right = ~left 
-        X_left = X[left]
-        y_left = y[left]
-        X_right = X[right]
-        y_right = y[right]
-        return X_left, y_left, X_right, y_right
+        pass
 
     def fit(self, X, y):
         # TODO
-        self.labels = y
-
-        #if hit max depth or all same labels
-        if self.max_depth == 0 or len(np.unique(y)) == 1:
-            self.pred = Counter(y).most_common(1)[0][0]
-            return
-
-        best_info_gain = -np.inf
-        best_feature_idx = None
-        best_thresh = None
-        best_splits = None
-
-
-        for i in range(X.shape[1]):
-
-            values = np.unique(X[:, i])
-            if len(values) <= 1:
-                continue
-            for j in range(len(values) - 1): 
-                thresh = (values[j] + values[j + 1]) / 2
-                curr_gain = DecisionTree.information_gain(X[:, i], y, thresh)
-                if curr_gain > best_info_gain:
-                    best_info_gain = curr_gain
-                    best_feature_idx = i
-                    best_thresh = thresh
-                    best_splits = self.split(X, y, i, thresh)
-
-        if best_info_gain <= 0 or best_splits is None:
-            self.pred = Counter(y).most_common(1)[0][0]
-            return
-
-        self.split_idx = best_feature_idx
-        self.thresh = best_thresh
-
-        X_left, y_left, X_right, y_right = best_splits
-        self.left = DecisionTree(self.max_depth - 1, self.features)
-        self.left.fit(X_left, y_left)
-        self.right = DecisionTree(self.max_depth - 1, self.features)
-        self.right.fit(X_right, y_right)
+        pass
 
     def predict(self, X):
         # TODO
-        res = []
-        for x in X:
-            node = self
-            while node.pred is None:
-                if x[node.split_idx] < node.thresh:
-                    node = node.left
-                else:
-                    node = node.right
-            res.append(node.pred)
-        return np.array(res)
-    
-    
+        pass
+
     def _to_graphviz(self, node_id):
-        # If this node is a leaf, indicated by self.pred being set, then just show the prediction.
-        if self.pred is not None:
-            return f'{node_id} [label="Prediction: {self.pred}\nSamples: {len(self.labels)}"];\n'
+        if self.max_depth == 0:
+            return f'{node_id} [label="Prediction: {self.pred}\nSamples: {self.labels.size}"];\n'
         else:
             graph = f'{node_id} [label="{self.features[self.split_idx]} < {self.thresh:.2f}"];\n'
             left_id = node_id * 2 + 1
@@ -158,7 +84,6 @@ class DecisionTree:
                 graph += self.right._to_graphviz(right_id)
             return graph
 
-
     def to_graphviz(self):
         graph = "digraph Tree {\nnode [shape=box];\n"
         graph += self._to_graphviz(0)
@@ -166,15 +91,13 @@ class DecisionTree:
         return graph
         
     def __repr__(self):
-        # If this node is a leaf, self.pred will be set.
         if self.max_depth == 0:
             return "%s (%s)" % (self.pred, self.labels.size)
-        if self.pred is not None:
-            return "%s (%s)" % (self.pred, len(self.labels))
         else:
             return "[%s < %s: %s | %s]" % (self.features[self.split_idx],
-                                        self.thresh, self.left.__repr__(),
-                                        self.right.__repr__())
+                                           self.thresh, self.left.__repr__(),
+                                           self.right.__repr__())
+
 
 class BaggedTrees(BaseEstimator, ClassifierMixin):
 
@@ -190,22 +113,11 @@ class BaggedTrees(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
         # TODO
-        n_samples = X.shape[0]
-        for tree in self.decision_trees:
-            bootstrap_idx = np.random.choice(n_samples, size=n_samples, replace=True)
-            X_bootstrap = X[bootstrap_idx]
-            y_bootstrap = y[bootstrap_idx]
-            tree.fit(X_bootstrap, y_bootstrap)
+        pass
 
     def predict(self, X):
         # TODO
-        all_preds = np.array([tree.predict(X) for tree in self.decision_trees])
-        all_preds = all_preds.T  
-        votes = []
-        for row in all_preds:
-            votes.append(Counter(row).most_common(1)[0][0])
-        return np.array(votes)
-
+        pass
 
 
 class RandomForest(BaggedTrees):
@@ -218,71 +130,47 @@ class RandomForest(BaggedTrees):
         super().__init__(params=params, n=n)
 
 
-# class BoostedRandomForest(RandomForest):
-#     # OPTIONAL
-#     def fit(self, X, y):
-#         # OPTIONAL
-#         pass
+class BoostedRandomForest(RandomForest):
+    # OPTIONAL
+    def fit(self, X, y):
+        # OPTIONAL
+        pass
     
-#     def predict(self, X):
-#         # OPTIONAL
-#         pass
-
+    def predict(self, X):
+        # OPTIONAL
+        pass
 
 
 def preprocess(data, fill_mode=True, min_freq=10, onehot_cols=[]):
-    data = np.array(data, dtype=str)
-    # Replace empty strings with the placeholder '-1'
-    data[data == ''] = '-1'
-    
-    # One-hot encode specified columns
+    # Temporarily assign -1 to missing data
+    data[data == b''] = '-1'
+
+    # Hash the columns (used for handling strings)
     onehot_encoding = []
     onehot_features = []
     for col in onehot_cols:
         counter = Counter(data[:, col])
-        for term, freq in counter.most_common():
-            if term == '-1': 
+        for term in counter.most_common():
+            if term[0] == b'-1':
                 continue
-            if freq <= min_freq:
+            if term[-1] <= min_freq:
                 break
-            onehot_features.append(term)
-            onehot_encoding.append((data[:, col] == term).astype(float))
+            onehot_features.append(term[0])
+            onehot_encoding.append((data[:, col] == term[0]).astype(float))
         data[:, col] = '0'
-    
-    if len(onehot_encoding) > 0:
-        onehot_encoding = np.array(onehot_encoding).T
-    else:
-        onehot_encoding = np.empty((data.shape[0], 0))
-    data_numeric = np.array(data, dtype=float)
-    
+    onehot_encoding = np.array(onehot_encoding).T
+    data = np.hstack(
+        [np.array(data, dtype=float),
+         np.array(onehot_encoding)])
+
     # Replace missing data with the mode value. We use the mode instead of
     # the mean or median because this makes more sense for categorical
     # features such as gender or cabin type, which are not ordered.
     if fill_mode:
         # TODO
-        for i in range(data_numeric.shape[1]):
-    
-            missing = np.abs(data_numeric[:, i] + 1) < eps
-            non_missing = data_numeric[~missing, i]
-            if non_missing.size == 0:
-                continue 
-          
-            non_missing = np.array(non_missing)
-            
-            if non_missing.ndim == 0 or non_missing.size == 1:
-                mode_val = non_missing.item()
-            else:
-                counts = Counter(non_missing)
-                mode_val = counts.most_common(1)[0][0]
+        pass
 
-            data_numeric[missing, i] = mode_val
-    
-    final_data = np.hstack([data_numeric, onehot_encoding])
-    
-    return final_data, onehot_features
-
-
-
+    return data, onehot_features
 
 
 def evaluate(clf):
@@ -308,9 +196,8 @@ def generate_submission(testing_data, predictions, dataset="titanic"):
     df.to_csv(f'predictions_{dataset}.csv', index_label='Id')
 
 
-
 if __name__ == "__main__":
-    dataset = "spam"
+    dataset = "titanic"
     # dataset = "spam"
     params = {
         "max_depth": 5,
@@ -328,7 +215,7 @@ if __name__ == "__main__":
         y = data[1:, 0]  # label = survived
         class_names = ["Died", "Survived"]
 
-        labeled_idx = np.delete(np.arange(len(y)), 705)
+        labeled_idx = np.where(y != b'')[0]
         y = np.array(y[labeled_idx], dtype=float).astype(int)
         print("\n\nPart (b): preprocessing the titanic dataset")
         X, onehot_features = preprocess(data[1:, 1:], onehot_cols=[1, 5, 7, 8])
