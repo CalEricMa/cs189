@@ -131,14 +131,21 @@ class FullyConnected(Layer):
 
         ### BEGIN YOUR CODE ###
 
-        W = self.init_weights(...)
-        b = ...
+        W = self.init_weights((self.n_in, self.n_out))
+        b = np.zeros((1, self.n_out))
 
-        self.parameters = OrderedDict({"W": W, "b": b}) # DO NOT CHANGE THE KEYS
-        self.cache: OrderedDict = ...  # cache for backprop
-        self.gradients: OrderedDict = ...  # parameter gradients initialized to zero
-                                           # MUST HAVE THE SAME KEYS AS `self.parameters`
 
+        self.parameters = OrderedDict({"W": W, "b": b}) 
+
+        # self.cache: OrderedDict = ...  # cache for backprop
+        # self.gradients: OrderedDict = ...  # parameter gradients initialized to zero
+        #                                    # MUST HAVE THE SAME KEYS AS `self.parameters`
+
+        self.cache = OrderedDict()
+        self.gradients = OrderedDict([
+            ("W", np.zeros_like(W)),
+            ("b", np.zeros_like(b))
+        ])
         ### END YOUR CODE ###
 
     def forward(self, X: np.ndarray) -> np.ndarray:
@@ -159,10 +166,17 @@ class FullyConnected(Layer):
             self._init_parameters(X.shape)
 
         ### BEGIN YOUR CODE ###
+
+
+        W = self.parameters["W"]     
+        b = self.parameters["b"]     
+        Z = X.dot(W) + b            
+        self.cache["X"] = X
+        self.cache["Z"] = Z
+
+        out = self.activation.forward(Z)
         
-        # perform an affine transformation and activation
-        out = ...
-        
+
         # store information necessary for backprop in `self.cache`
 
         ### END YOUR CODE ###
@@ -187,17 +201,19 @@ class FullyConnected(Layer):
         shape (batch_size, input_dim)
         """
         ### BEGIN YOUR CODE ###
-        
-        # unpack the cache
-        
-        # compute the gradients of the loss w.r.t. all parameters as well as the
-        # input of the layer
 
-        dX = ...
+        W = self.parameters["W"]     
+        X = self.cache["X"]          
+        Z = self.cache["Z"]          
 
-        # store the gradients in `self.gradients`
-        # the gradient for self.parameters["W"] should be stored in
-        # self.gradients["W"], etc.
+        dZ = self.activation.backward(Z, dLdY) 
+
+        dW = X.T.dot(dZ)         
+        db = np.sum(dZ, axis=0, keepdims=True)  
+        dX = dZ.dot(W.T)            
+
+        self.gradients["W"] = dW
+        self.gradients["b"] = db
 
         ### END YOUR CODE ###
 

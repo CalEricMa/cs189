@@ -176,13 +176,15 @@ class ReLU(Activation):
         gradient of loss w.r.t. input of this layer
         """
         ### YOUR CODE HERE ###
-        dZ = dY * (Z > 0) 
-        return dZ
+        indicator = (Z > 0).astype(Z.dtype)
+        dLdZ = dY * indicator
+        return dLdZ
 
 
 class SoftMax(Activation):
     def __init__(self):
         super().__init__()
+        self.cache = {}
 
     def forward(self, Z: np.ndarray) -> np.ndarray:
         """Forward pass for softmax activation.
@@ -197,7 +199,16 @@ class SoftMax(Activation):
         f(z) as described above applied elementwise to `Z`
         """
         ### YOUR CODE HERE ###
-        return ...
+
+        
+
+        shift = Z - np.max(Z, axis=1, keepdims=True)   # shape (B,K)
+        exp_shift = np.exp(shift)                      # shape (B,K)
+        sums = np.sum(exp_shift, axis=1, keepdims=True)  # shape (B,1)
+        Y = exp_shift / sums                           # shape (B,K)
+
+        self.cache["Y"] = Y
+        return Y
 
     def backward(self, Z: np.ndarray, dY: np.ndarray) -> np.ndarray:
         """Backward pass for softmax activation.
@@ -213,7 +224,13 @@ class SoftMax(Activation):
         gradient of loss w.r.t. input of this layer
         """
         ### YOUR CODE HERE ###
-        return ...
+
+        
+        Y = self.cache["Y"]                            # shape (B,K)
+
+        dot = np.sum(dY * Y, axis=1, keepdims=True)    # shape (B,1)
+        dZ = Y * (dY - dot)                            # shape (B,K)
+        return dZ
 
 
 class ArcTan(Activation):
