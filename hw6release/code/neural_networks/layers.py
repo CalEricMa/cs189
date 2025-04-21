@@ -226,6 +226,7 @@ class BatchNorm1D(Layer):
         weight_init: str = "xavier_uniform",
         eps: float = 1e-8,
         momentum: float = 0.9,
+        n_in: int = None, 
     ) -> None:
         super().__init__()
         
@@ -234,6 +235,18 @@ class BatchNorm1D(Layer):
 
         self.eps = eps
         self.momentum = momentum
+        self.n_in = None
+
+        self.running_mu  = None
+        self.running_var = None
+        # cache placeholder
+        self.cache = OrderedDict()
+
+        # If test passed in n_in, immediately init parameters
+        if n_in is not None:
+            # we only need the second dimension
+            self._init_parameters((0, n_in))
+
 
     def _init_parameters(self, X_shape: Tuple[int, int]) -> None:
         """Initialize all layer parameters (weights, biases)."""
@@ -241,17 +254,36 @@ class BatchNorm1D(Layer):
 
         ### BEGIN YOUR CODE ###
 
-        gamma = self.init_weights(...)
-        beta = ...
+        gamma = self.init_weights((1, X_shape[1]))
+        beta  = np.zeros((1, X_shape[1]))
 
-        self.parameters = OrderedDict({"gamma": gamma, "beta": beta}) # DO NOT CHANGE THE KEYS
-        self.cache = OrderedDict({"X": ..., "X_hat": ..., 
-                                  "mu": ..., "var": ..., 
-                                  "running_mu": ..., "running_var": ...})  
-        # cache for backprop
-        self.gradients: OrderedDict = ...  # parameter gradients initialized to zero
-                                           # MUST HAVE THE SAME KEYS AS `self.parameters`
+        # self.parameters = OrderedDict({"gamma": gamma, "beta": beta}) # DO NOT CHANGE THE KEYS
+        # self.cache = OrderedDict({"X": ..., "X_hat": ..., 
+        #                           "mu": ..., "var": ..., 
+        #                           "running_mu": ..., "running_var": ...})  
+        # # cache for backprop
+        # self.gradients: OrderedDict = ...  # parameter gradients initialized to zero
+        #                                    # MUST HAVE THE SAME KEYS AS `self.parameters`
 
+        self.parameters = OrderedDict([
+            ("gamma", gamma),
+            ("beta",  beta),
+        ])
+
+        self.gradients = OrderedDict([
+            ("gamma", np.zeros_like(gamma)),
+            ("beta",  np.zeros_like(beta)),
+        ])
+
+        self.running_mu  = np.zeros((1, X_shape[1]))
+        self.running_var = np.zeros((1, X_shape[1]))
+        # placeholder for forward‐cache
+        self.cache = OrderedDict([
+            ("X",      None),
+            ("X_hat",  None),
+            ("mu",     None),
+            ("var",    None),
+        ])
         ### END YOUR CODE ###
 
     def forward(self, X: np.ndarray, mode: str = "train") -> np.ndarray:
@@ -269,6 +301,49 @@ class BatchNorm1D(Layer):
 
         # cache any values required for backprop
 
+
+        if self.n_in is None:
+            self._init_parameters(X.shape)
+
+        gamma = self.parameters["gamma"]  # (1, C)
+        beta  = self.parameters["beta"]   # (1, C)
+
+        if mode == "train":
+            # 1) batch statistics
+            mu  = X.mean(axis=0, keepdims=True)         # (1, C)
+            var = X.var(axis=0, keepdims=True)          # (1, C)
+
+            # 2) normalize
+            X_centered = X - mu                         # (B, C)
+            inv_std    = 1.0 / np.sqrt(var + self.eps)  # (1, C)
+            X_hat      = X_centered * inv_std           # (B, C)
+
+            # 3) scale & shift
+            out = gamma * X_hat + beta                  # (B, C)
+
+            # 4) update running stats
+            self.running_mu  = self.momentum * self.running_mu \
+                                 + (1 - self.momentum) * mu
+            self.running_var = self.momentum * self.running_var \
+                                 + (1 - self.momentum) * var
+
+            # 5) cache for backward
+            self.cache["X"]     = X
+            self.cache["X_hat"] = X_hat
+            self.cache["mu"]    = mu
+            self.cache["var"]   = var
+
+            self.cache["running_mu"]  = self.running_mu
+            self.cache["running_var"] = self.running_var
+
+        else:
+            # test mode: use running averages
+            X_centered = X - self.running_mu
+            inv_std    = 1.0 / np.sqrt(self.running_var + self.eps)
+            X_hat      = X_centered * inv_std
+            out        = gamma * X_hat + beta
+
+
         ### END YOUR CODE ###
         return out
 
@@ -281,6 +356,41 @@ class BatchNorm1D(Layer):
         ### BEGIN YOUR CODE ###
 
         # implement backward pass for batchnorm.
+
+
+        X     = self.cache["X"]
+        X_hat = self.cache["X_hat"]
+        mu    = self.cache["mu"]
+        var   = self.cache["var"]
+        gamma = self.parameters["gamma"]
+        B, C  = X.shape
+
+        # Gradients w.r.t. gamma & beta
+
+        dgamma = np.sum(dY * X_hat, axis=0)  # (C,)
+        dbeta  = np.sum(dY,       axis=0)    # (C,)
+
+
+        # Gradient w.r.t. normalized X
+        dX_hat = dY * gamma                                 # (B, C)
+
+        # Backprop through normalization
+        inv_std = 1.0 / np.sqrt(var + self.eps)             # (1, C)
+        dvar    = np.sum(dX_hat * (X - mu) * -0.5 * inv_std**3,
+                         axis=0, keepdims=True)            # (1, C)
+        dmu     = np.sum(dX_hat * -inv_std, axis=0, keepdims=True)
+        dmu    += dvar * np.mean(-2 * (X - mu), axis=0, keepdims=True)
+
+        # Gradient w.r.t. original input X
+        dX = (dX_hat * inv_std) \
+           + (dvar * 2 * (X - mu) / B) \
+           + (dmu / B)
+
+        # Store parameter gradients
+        self.gradients["gamma"] = dgamma
+        self.gradients["beta"]  = dbeta
+
+
 
         ### END YOUR CODE ###
         
