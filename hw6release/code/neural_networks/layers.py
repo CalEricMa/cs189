@@ -473,9 +473,52 @@ class Conv2D(Layer):
 
         # cache any values required for backprop
 
+        ph, pw = self.pad            
+        s = self.stride
+
+        B, H_in, W_in, Cin = X.shape
+        kh, kw, _, Cout   = W.shape
+        X_pad = np.pad(
+            X,
+            ((0,0),               # batch dim
+             (ph,ph),             # height
+             (pw,pw),             # width
+             (0,0)),              # channels
+            mode="constant",
+            constant_values=0
+        )
+
+        H_out = (H_in + 2*ph - kh)//s + 1
+        W_out = (W_in + 2*pw - kw)//s + 1
+
+        Z = np.zeros((B, H_out, W_out, Cout), dtype=X.dtype)
+
+        for i in range(kh):
+            for j in range(kw):
+                # extract the patches of X_pad covered by W[i,j,:,:]
+                # shape = (B, H_out, W_out, Cin)
+                patch = X_pad[
+                    :,
+                    i : i + H_out*s : s,
+                    j : j + W_out*s : s,
+                    :
+                ]
+                # now do a batched channel‑wise dot with W[i,j]
+                # patch @ W[i,j] over the Cin dimension → (B,H_out,W_out,Cout)
+                Z += np.einsum("bhwc,cf->bhwf", patch, W[i, j, :, :])
+
+        # 4) add bias & apply activation
+        Z += b                       # broadcast over batch+spatial dims
+        Y = self.activation.forward(Z)
+
+        # 5) cache for backward
+        self.cache["X_pad"] = X_pad
+        self.cache["Z"]     = Z
+
+
         ### END YOUR CODE ###
 
-        return out
+        return Y
 
     def backward(self, dLdY: np.ndarray) -> np.ndarray:
         """Backward pass for conv layer. Computes the gradients of the output
@@ -568,7 +611,59 @@ class Pool2D(Layer):
 
         ### END YOUR CODE ###
 
-        return X_pool
+
+        B, H, W, C = X.shape
+        kh, kw   = self.kernel_shape
+        ph, pw   = self.pad
+        s        = self.stride
+
+        # 1) pad input
+        X_pad = np.pad(
+            X,
+            ((0,0),(ph,ph),(pw,pw),(0,0)),
+            mode="constant",
+            constant_values=0
+        )
+
+        # 2) compute output dims
+        H_out = (H + 2*ph - kh)//s + 1
+        W_out = (W + 2*pw - kw)//s + 1
+
+        # 3) gather all kh*kw shifted patches
+        patches = []
+        for i in range(kh):
+            for j in range(kw):
+                # shape: (B, H_out, W_out, C)
+                patch = X_pad[
+                    :,
+                    i : i + H_out*s : s,
+                    j : j + W_out*s : s,
+                    :
+                ]
+                patches.append(patch)
+        # stack into shape (P, B, H_out, W_out, C)
+        patches = np.stack(patches, axis=0)
+        P = patches.shape[0]
+
+        # 4) pool
+        if self.mode == "max":
+            out = patches.max(axis=0)        # (B,H_out,W_out,C)
+            argmax = patches.argmax(axis=0)  # indices in [0..P)
+            # cache for backward
+            self.cache["argmax"] = argmax
+        else:  # average
+            out = patches.mean(axis=0)       # (B,H_out,W_out,C)
+
+        # 5) stash everything for backward
+        self.cache["X_shape"]   = (B, H, W, C)
+        self.cache["X_pad"]     = X_pad
+        self.cache["patches"]   = patches.shape  # just to know P,kh,kw
+        self.cache["pool_shape"]= (kh, kw)
+        self.cache["stride"]    = s
+        self.cache["pad"]       = (ph, pw)
+
+
+        return out
 
     def backward(self, dLdY: np.ndarray) -> np.ndarray:
         """Backward pass for pooling layer.
@@ -587,9 +682,52 @@ class Pool2D(Layer):
 
         # perform a backward pass
 
+
+        B, H, W, C = self.cache["X_shape"]
+        ph, pw     = self.cache["pad"]
+        s          = self.cache["stride"]
+        kh, kw     = self.cache["pool_shape"]
+        patches_sh = self.cache["patches"]     # (P, B, H_out, W_out, C)
+        P, _, H_out, W_out, _ = patches_sh
+
+        X_pad = self.cache["X_pad"]
+        gradX = np.zeros_like(X_pad)
+
+        if self.mode == "max":
+            argmax = self.cache["argmax"]       # (B,H_out,W_out,C)
+            # for each window position p, scatter the upstream grad where argmax==p
+            p = 0
+            for i in range(kh):
+                for j in range(kw):
+                    mask = (argmax == p)        # (B,H_out,W_out,C)
+                    # expand to grad shape
+                    dpatch = dLdY * mask        # (B,H_out,W_out,C)
+                    gradX[
+                        :,
+                        i : i + H_out*s : s,
+                        j : j + W_out*s : s,
+                        :
+                    ] += dpatch
+                    p += 1
+
+        else:  # average pooling
+            # each output grad splits evenly across P inputs
+            dpatch = dLdY / float(P)            # (B,H_out,W_out,C)
+            for i in range(kh):
+                for j in range(kw):
+                    gradX[
+                        :,
+                        i : i + H_out*s : s,
+                        j : j + W_out*s : s,
+                        :
+                    ] += dpatch
+
+        # 6) unpad to original input shape
+        dX = gradX[:, ph:ph+H, pw:pw+W, :]
+
         ### END YOUR CODE ###
 
-        return gradX
+        return dX
 
 class Flatten(Layer):
     """Flatten the input array."""
