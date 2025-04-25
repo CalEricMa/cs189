@@ -2,7 +2,7 @@
 import argparse
 import inspect
 from typing import Dict, List
-
+import numpy as np
 from neural_networks import activations, layers, losses, models
 
 

@@ -53,12 +53,9 @@ class CrossEntropy(Loss):
 
 
         B = Y.shape[0]
-        # Clip Y_hat to avoid log(0)
         eps = 1e-12
-        Y_hat_clipped = np.clip(Y_hat, eps, 1.0 - eps)
-
-        # Elementwise product and sum
-        loss = - np.sum(Y * np.log(Y_hat_clipped)) / B
+        Y_hat = np.clip(Y_hat, eps, 1.0 - eps)
+        loss = - np.sum(Y * np.log(Y_hat)) / B
         return loss
 
     def backward(self, Y: np.ndarray, Y_hat: np.ndarray) -> np.ndarray:
@@ -79,10 +76,7 @@ class CrossEntropy(Loss):
 
         
         B = Y.shape[0]
-        # Clip to avoid division by zero
         eps = 1e-12
-        Y_hat_clipped = np.clip(Y_hat, eps, 1.0 - eps)
-
-        # dL/dY_hat = -1/B * Y / Y_hat
-        grad = - (Y / Y_hat_clipped) / B
+        Y_hat = np.clip(Y_hat, eps, 1.0 - eps)
+        grad = - (Y / Y_hat) / B
         return grad

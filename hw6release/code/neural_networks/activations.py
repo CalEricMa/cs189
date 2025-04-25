@@ -202,8 +202,6 @@ class SoftMax(Activation):
         """
         ### YOUR CODE HERE ###
 
-        
-
         shift = Z - np.max(Z, axis=1, keepdims=True)   # shape (B,K)
         exp_shift = np.exp(shift)                      # shape (B,K)
         sums = np.sum(exp_shift, axis=1, keepdims=True)  # shape (B,1)
