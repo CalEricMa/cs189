@@ -598,7 +598,6 @@ class Pool2D(Layer):
         ph, pw   = self.pad
         s        = self.stride
 
-        # 1) pad input
         X_pad = np.pad(
             X,
             ((0,0),(ph,ph),(pw,pw),(0,0)),
@@ -606,15 +605,12 @@ class Pool2D(Layer):
             constant_values=0
         )
 
-        # 2) compute output dims
         H_out = (H + 2*ph - kh)//s + 1
         W_out = (W + 2*pw - kw)//s + 1
 
-        # 3) gather all kh*kw shifted patches
         patches = []
         for i in range(kh):
             for j in range(kw):
-                # shape: (B, H_out, W_out, C)
                 patch = X_pad[
                     :,
                     i : i + H_out*s : s,
@@ -622,23 +618,20 @@ class Pool2D(Layer):
                     :
                 ]
                 patches.append(patch)
-        # stack into shape (P, B, H_out, W_out, C)
         patches = np.stack(patches, axis=0)
         P = patches.shape[0]
 
-        # 4) pool
         if self.mode == "max":
-            out = patches.max(axis=0)        # (B,H_out,W_out,C)
-            argmax = patches.argmax(axis=0)  # indices in [0..P)
-            # cache for backward
-            self.cache["argmax"] = argmax
-        else:  # average
-            out = patches.mean(axis=0)       # (B,H_out,W_out,C)
+            out = patches.max(axis=0)        
+            argmax = patches.argmax(axis=0)  
 
-        # 5) stash everything for backward
+            self.cache["argmax"] = argmax
+        else: 
+            out = patches.mean(axis=0)       
+
         self.cache["X_shape"]   = (B, H, W, C)
         self.cache["X_pad"]     = X_pad
-        self.cache["patches"]   = patches.shape  # just to know P,kh,kw
+        self.cache["patches"]   = patches.shape 
         self.cache["pool_shape"]= (kh, kw)
         self.cache["stride"]    = s
         self.cache["pad"]       = (ph, pw)
@@ -668,21 +661,20 @@ class Pool2D(Layer):
         ph, pw     = self.cache["pad"]
         s          = self.cache["stride"]
         kh, kw     = self.cache["pool_shape"]
-        patches_sh = self.cache["patches"]     # (P, B, H_out, W_out, C)
+        patches_sh = self.cache["patches"]     
         P, _, H_out, W_out, _ = patches_sh
 
         X_pad = self.cache["X_pad"]
         gradX = np.zeros_like(X_pad)
 
         if self.mode == "max":
-            argmax = self.cache["argmax"]       # (B,H_out,W_out,C)
-            # for each window position p, scatter the upstream grad where argmax==p
+            argmax = self.cache["argmax"]      
+     
             p = 0
             for i in range(kh):
                 for j in range(kw):
-                    mask = (argmax == p)        # (B,H_out,W_out,C)
-                    # expand to grad shape
-                    dpatch = dLdY * mask        # (B,H_out,W_out,C)
+                    mask = (argmax == p)        
+                    dpatch = dLdY * mask       
                     gradX[
                         :,
                         i : i + H_out*s : s,
@@ -691,9 +683,8 @@ class Pool2D(Layer):
                     ] += dpatch
                     p += 1
 
-        else:  # average pooling
-            # each output grad splits evenly across P inputs
-            dpatch = dLdY / float(P)            # (B,H_out,W_out,C)
+        else:  
+            dpatch = dLdY / float(P)            
             for i in range(kh):
                 for j in range(kw):
                     gradX[
@@ -703,7 +694,6 @@ class Pool2D(Layer):
                         :
                     ] += dpatch
 
-        # 6) unpad to original input shape
         dX = gradX[:, ph:ph+H, pw:pw+W, :]
 
         ### END YOUR CODE ###
